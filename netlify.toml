@@ -1,0 +1,15 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Redirect do SPA. A Netlify já ignora /.netlify/* nativamente antes de
+# aplicar redirects definidos aqui, então as functions não precisam de uma
+# regra própria — só essa catch-all para as rotas do React Router.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
