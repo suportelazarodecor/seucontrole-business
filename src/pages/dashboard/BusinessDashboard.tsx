@@ -22,11 +22,24 @@ import {
   topCounterparties,
 } from '@/lib/metrics'
 import { subMonths } from 'date-fns'
+import { Link } from 'react-router-dom'
+import { Plus, Tag, Wallet, TrendingUp } from '@/components/ui/icons'
 
 export default function BusinessDashboard() {
   const { profile, userId } = useAuthStore()
   const [subscriptions, setSubscriptions] = useState<Array<{id:string;name:string;day:number}>>([])
-  useEffect(() => { if (userId) void db.list<{id:string;name:string;day:number}>('subscriptions',userId).then(setSubscriptions) }, [userId])
+  const [suppliers, setSuppliers] = useState<Array<{id:string;name:string}>>([])
+  useEffect(() => {
+    if (!userId) return
+    let active = true
+    void Promise.all([
+      db.list<{id:string;name:string;day:number}>('subscriptions', userId).catch(() => []),
+      db.list<{id:string;name:string}>('suppliers', userId).catch(() => []),
+    ]).then(([subscriptionRows, supplierRows]) => {
+      if (active) { setSubscriptions(subscriptionRows); setSuppliers(supplierRows) }
+    })
+    return () => { active = false }
+  }, [userId])
   const { transactions, categories, accounts } = useDataStore()
   const currency = profile?.default_currency ?? 'BRL'
 
@@ -54,16 +67,52 @@ export default function BusinessDashboard() {
   const elapsedDays = now.getDate()
   const dailyAverage = transactions.filter(t=>t.mode==='business'&&t.type==='expense'&&new Date(t.date+'T00:00:00').getMonth()===now.getMonth()&&new Date(t.date+'T00:00:00').getFullYear()===now.getFullYear()).reduce((n,t)=>n+t.amount,0)/elapsedDays
   const dueAlerts = accounts.filter(a=>a.mode==='business'&&a.kind==='payable'&&a.status!=='paid').map(a=>({a,days:differenceInCalendarDays(new Date(a.due_date+'T00:00:00'),new Date(now.toDateString()))})).filter(x=>x.days<=7).sort((a,b)=>a.days-b.days)
+  const unusualSupplierSpend = useMemo(() => {
+    const start = new Date(now); start.setDate(start.getDate() - 7); start.setHours(0,0,0,0)
+    const previousStart = new Date(start); previousStart.setDate(previousStart.getDate() - 7)
+    return suppliers.map(supplier => {
+      const matching = transactions.filter(t => t.mode === 'business' && t.type === 'expense' && t.client_or_supplier?.toLowerCase() === supplier.name.toLowerCase())
+      const recent = matching.filter(t => new Date(t.date + 'T00:00:00') >= start).reduce((n,t) => n + t.amount, 0)
+      const previous = matching.filter(t => { const d = new Date(t.date + 'T00:00:00'); return d >= previousStart && d < start }).reduce((n,t) => n + t.amount, 0)
+      return { ...supplier, recent, previous }
+    }).filter(supplier => supplier.recent >= 500 && supplier.recent > supplier.previous * 1.5)
+      .sort((a,b) => b.recent - a.recent).slice(0, 3)
+  }, [suppliers, transactions])
+  const totalAlerts = dueAlerts.length + subscriptions.filter(s => {
+    const date = new Date(now.getFullYear(), now.getMonth(), Math.min(s.day, new Date(now.getFullYear(), now.getMonth()+1, 0).getDate()))
+    if (date < now) date.setMonth(date.getMonth() + 1)
+    return differenceInCalendarDays(date, new Date(now.toDateString())) <= 7
+  }).length + unusualSupplierSpend.length
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-bold tracking-tight text-text">Olá, {profile?.full_name?.trim().split(/\s+/)[0] || 'bem-vindo(a)'} 👋</h1>
-        <p className="mt-1 text-sm font-medium text-petroleo">Visão Business · {profile?.company_name || 'Sua empresa'}</p>
-        <p className="text-sm text-muted">Visão consolidada do desempenho financeiro da empresa no mês atual.</p>
-      </div>
+    <div className="space-y-6 sm:space-y-7">
+      <Card className="relative overflow-hidden border-sky-200/70 bg-gradient-to-br from-white via-sky-50/70 to-indigo-50/50 p-5 sm:p-7 dark:border-sky-400/15 dark:from-slate-800 dark:via-slate-800 dark:to-sky-950/40">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-20 h-64 w-64 rounded-full bg-sky-400/10 blur-3xl" />
+        <div className="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
+          <div>
+            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-sky-200 bg-white/75 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[.14em] text-sky-700 dark:border-sky-400/20 dark:bg-sky-400/10 dark:text-sky-200"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />Resumo financeiro</div>
+            <h1 className="text-2xl font-extrabold tracking-tight text-text sm:text-3xl">Olá, {profile?.full_name?.trim().split(/\s+/)[0] || 'bem-vindo(a)'} <span className="inline-block origin-bottom animate-[wave_1.8s_ease-in-out_infinite]">👋</span></h1>
+            <p className="mt-2 text-sm font-semibold text-petroleo">{profile?.company_name || 'Sua empresa'}</p>
+            <p className="mt-1 max-w-xl text-sm leading-relaxed text-muted">Acompanhe o desempenho do mês e encontre rapidamente o que precisa para manter a operação em dia.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link to="/app/lancamentos" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-sky-300/50 bg-gradient-to-b from-sky-300 via-sky-500 to-blue-700 px-3.5 text-xs font-bold text-white shadow-[inset_0_1px_1px_rgba(255,255,255,.65),0_3px_0_#075985,0_7px_14px_rgba(14,165,233,.20)] transition hover:-translate-y-0.5 hover:shadow-[inset_0_1px_1px_rgba(255,255,255,.7),0_4px_0_#075985,0_10px_18px_rgba(14,165,233,.25)] active:translate-y-[2px]"><Plus size={15} /> Novo lançamento</Link>
+            <Link to="/app/contas" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border bg-gradient-to-b from-white to-slate-100 px-3.5 text-xs font-bold text-text shadow-[inset_0_1px_1px_rgba(255,255,255,.9),0_2px_0_#cbd5e1,0_5px_10px_rgba(15,23,42,.07)] transition hover:-translate-y-0.5 hover:border-sky-300 dark:from-slate-700 dark:to-slate-800 dark:shadow-[inset_0_1px_1px_rgba(255,255,255,.08),0_2px_0_#0b1220,0_5px_10px_rgba(0,0,0,.2)]"><Wallet size={15} /> Contas</Link>
+            <Link to="/app/fornecedores" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border bg-gradient-to-b from-white to-slate-100 px-3.5 text-xs font-bold text-text shadow-[inset_0_1px_1px_rgba(255,255,255,.9),0_2px_0_#cbd5e1,0_5px_10px_rgba(15,23,42,.07)] transition hover:-translate-y-0.5 hover:border-sky-300 dark:from-slate-700 dark:to-slate-800 dark:shadow-[inset_0_1px_1px_rgba(255,255,255,.08),0_2px_0_#0b1220,0_5px_10px_rgba(0,0,0,.2)]"><Tag size={15} /> Fornecedores</Link>
+          </div>
+        </div>
+      </Card>
 
-      <div className="grid gap-4 lg:grid-cols-3"><Card className="p-5"><p className="text-sm text-muted">Gasto diário médio</p><p className="mt-1 text-2xl font-bold">{formatCurrency(dailyAverage,currency)}</p><p className="mt-1 text-xs text-muted">Despesas deste mês ÷ {elapsedDays} dias decorridos.</p></Card><Card className="p-5 lg:col-span-2"><p className="mb-3 font-semibold">Avisos importantes</p>{dueAlerts.length===0&&subscriptions.length===0?<p className="text-sm text-muted">Nenhum vencimento próximo cadastrado.</p>:<div className="space-y-2">{dueAlerts.map(({a,days})=><p key={a.id} className="rounded-lg bg-ambar/10 px-3 py-2 text-sm">{a.description}: {days<0?'vencida há '+Math.abs(days)+' dia(s)':days===0?'vence hoje':'vence em '+days+' dia(s)'}.</p>)}{subscriptions.map(s=>{const date=new Date(now.getFullYear(),now.getMonth(),Math.min(s.day,new Date(now.getFullYear(),now.getMonth()+1,0).getDate()));if(date<now)date.setMonth(date.getMonth()+1);const days=differenceInCalendarDays(date,new Date(now.toDateString()));return days<=7?<p key={s.id} className="rounded-lg bg-petroleo/10 px-3 py-2 text-sm">{s.name}: vence em {days===0?'hoje':days+' dia(s)'}.</p>:null})}</div>}</Card></div>
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Card className="relative overflow-hidden border-sky-200/60 bg-gradient-to-br from-sky-50 to-white p-5 dark:border-sky-400/15 dark:from-sky-950/30 dark:to-slate-800 sm:p-6">
+          <div className="flex items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[.12em] text-muted">Gasto diário médio</p><p className="tabular mt-2 text-3xl font-extrabold tracking-tight text-text">{formatCurrency(dailyAverage,currency)}</p></div><span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/70 bg-gradient-to-br from-sky-300 to-blue-600 text-white shadow-[inset_0_1px_1px_rgba(255,255,255,.5),0_4px_10px_rgba(14,165,233,.22)]"><TrendingUp size={20} /></span></div>
+          <p className="mt-3 text-xs leading-relaxed text-muted">Média calculada com as despesas registradas neste mês ({elapsedDays} dias).</p>
+        </Card>
+        <Card className="p-5 lg:col-span-2 sm:p-6">
+          <div className="mb-4 flex items-center justify-between gap-3"><div><h2 className="text-sm font-bold tracking-tight">Avisos importantes</h2><p className="mt-1 text-xs text-muted">Contas próximas e mudanças fora do padrão</p></div><span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${totalAlerts ? 'bg-amber-100 text-amber-800 dark:bg-amber-400/10 dark:text-amber-200' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-400/10 dark:text-emerald-200'}`}>{totalAlerts ? `${totalAlerts} ${totalAlerts === 1 ? 'aviso' : 'avisos'}` : 'Tudo em dia'}</span></div>
+          {dueAlerts.length===0&&subscriptions.length===0&&unusualSupplierSpend.length===0?<div className="flex items-center gap-3 rounded-xl border border-dashed bg-surface-soft px-4 py-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-300">✓</span><p className="text-sm text-muted">Nenhum vencimento próximo ou gasto acima do padrão identificado.</p></div>:<div className="grid gap-2 sm:grid-cols-2">{dueAlerts.map(({a,days})=><p key={a.id} className="rounded-xl border border-amber-200/60 bg-amber-50/70 px-3.5 py-3 text-sm text-amber-900 dark:border-amber-400/15 dark:bg-amber-400/5 dark:text-amber-100"><span className="font-bold">{a.description}</span><span className="block mt-1 text-xs opacity-80">{days<0?'Vencida há '+Math.abs(days)+' dia(s)':days===0?'Vence hoje':'Vence em '+days+' dia(s)'}.</span></p>)}{subscriptions.map(s=>{const date=new Date(now.getFullYear(),now.getMonth(),Math.min(s.day,new Date(now.getFullYear(),now.getMonth()+1,0).getDate()));if(date<now)date.setMonth(date.getMonth()+1);const days=differenceInCalendarDays(date,new Date(now.toDateString()));return days<=7?<p key={s.id} className="rounded-xl border border-sky-200/60 bg-sky-50/70 px-3.5 py-3 text-sm text-sky-900 dark:border-sky-400/15 dark:bg-sky-400/5 dark:text-sky-100"><span className="font-bold">{s.name}</span><span className="block mt-1 text-xs opacity-80">Vence {days===0?'hoje':'em '+days+' dia(s)'}.</span></p>:null})}{unusualSupplierSpend.map(s=><p key={s.id} className="rounded-xl border border-rose-200/70 bg-rose-50/70 px-3.5 py-3 text-sm text-rose-900 dark:border-rose-400/15 dark:bg-rose-400/5 dark:text-rose-100"><span className="font-bold">Gasto acima do padrão · {s.name}</span><span className="block mt-1 text-xs opacity-80">{formatCurrency(s.recent,currency)} nos últimos 7 dias, ante {formatCurrency(s.previous,currency)} nos 7 anteriores.</span></p>)}</div>}
+        </Card>
+      </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         <KpiCard label="Receita do mês" value={formatCurrency(kpis.income, currency)} delta={kpis.incomeDelta} accent="esmeralda" hint="vs. mês anterior" />

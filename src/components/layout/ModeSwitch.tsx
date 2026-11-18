@@ -1,3 +1,3 @@
 export function ModeSwitch() {
-  return <span className="rounded-full bg-petroleo/10 px-3 py-1.5 text-xs font-semibold text-petroleo">Business</span>
+  return <span className="inline-flex items-center gap-2 rounded-full border border-emerald-300/60 bg-gradient-to-b from-emerald-50 to-white px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[.1em] text-emerald-700 shadow-[inset_0_1px_1px_rgba(255,255,255,.9),0_2px_0_rgba(16,185,129,.18),0_4px_10px_rgba(16,185,129,.06)] dark:border-emerald-400/20 dark:from-emerald-400/10 dark:to-emerald-500/5 dark:text-emerald-300 dark:shadow-[inset_0_1px_1px_rgba(255,255,255,.04),0_2px_0_rgba(0,0,0,.18)]"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_7px_rgba(16,185,129,.65)]" />Business</span>
 }

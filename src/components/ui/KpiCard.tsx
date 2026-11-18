@@ -15,12 +15,13 @@ export function KpiCard({ label, value, delta, deltaGoodWhenUp = true, hint, acc
   const isUp = (delta ?? 0) >= 0
   const isGood = deltaGoodWhenUp ? isUp : !isUp
   return (
-    <Card className="p-4">
+    <Card className="relative min-h-[122px] overflow-hidden p-4 pt-5 sm:p-5">
+      <span aria-hidden="true" className={clsx('absolute left-5 top-0 h-[3px] w-12 rounded-b-full opacity-90', accentDot[accent])} />
       <div className="flex items-center justify-between">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted">{label}</p>
-        <span className={clsx('h-1.5 w-1.5 rounded-full', accentDot[accent])} />
+        <p className="text-[10px] font-bold uppercase tracking-[.12em] text-muted sm:text-[11px]">{label}</p>
+        <span className={clsx('h-2 w-2 rounded-full ring-4 ring-opacity-10', accentDot[accent])} />
       </div>
-      <p className="tabular mt-2 text-2xl font-bold text-text">{value}</p>
+      <p className="tabular mt-2.5 text-[22px] font-extrabold tracking-tight text-text sm:text-2xl">{value}</p>
       <div className="mt-1.5 flex items-center gap-1.5">
         {typeof delta === 'number' && (
           <span
