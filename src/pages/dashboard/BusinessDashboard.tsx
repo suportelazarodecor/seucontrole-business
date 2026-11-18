@@ -86,26 +86,26 @@ export default function BusinessDashboard() {
 
   return (
     <div className="space-y-6 sm:space-y-7">
-      <Card className="relative overflow-hidden border-sky-200/70 bg-gradient-to-br from-white via-sky-50/70 to-indigo-50/50 p-5 sm:p-7 dark:border-sky-400/15 dark:from-slate-800 dark:via-slate-800 dark:to-sky-950/40">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-20 h-64 w-64 rounded-full bg-sky-400/10 blur-3xl" />
+      <Card className="hero-panel relative overflow-hidden p-5 sm:p-7">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-20 h-64 w-64 rounded-full blur-3xl" style={{ background: 'var(--color-accent-glow)' }} />
         <div className="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
           <div className="lg:max-w-[430px]">
-            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-sky-200 bg-white/75 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[.14em] text-sky-700 dark:border-sky-400/20 dark:bg-sky-400/10 dark:text-sky-200"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />Resumo financeiro</div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-text sm:text-3xl">Olá, {profile?.full_name?.trim().split(/\s+/)[0] || 'bem-vindo(a)'} <span className="inline-block origin-bottom animate-[wave_1.8s_ease-in-out_infinite]">👋</span></h1>
+            <div className="palette-soft mb-2 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[10px] font-extrabold uppercase tracking-[.14em]" style={{ borderColor: 'color-mix(in srgb, var(--color-accent) 25%, transparent)' }}><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />Resumo financeiro</div>
+            <h1 className="text-2xl font-extrabold tracking-tight text-text sm:text-3xl">Olá, {profile?.full_name?.trim().split(/\s+/)[0] || 'bem-vindo(a)'} 👋</h1>
             <p className="mt-2 text-sm font-semibold text-petroleo">{profile?.company_name || 'Sua empresa'}</p>
             <p className="mt-1 max-w-xl text-sm leading-relaxed text-muted">Acompanhe o desempenho do mês e encontre rapidamente o que precisa para manter a operação em dia.</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Link to="/app/lancamentos" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-sky-300/50 bg-gradient-to-b from-sky-300 via-sky-500 to-blue-700 px-3.5 text-xs font-bold text-white shadow-[inset_0_1px_1px_rgba(255,255,255,.65),0_3px_0_#075985,0_7px_14px_rgba(14,165,233,.20)] transition hover:-translate-y-0.5 hover:shadow-[inset_0_1px_1px_rgba(255,255,255,.7),0_4px_0_#075985,0_10px_18px_rgba(14,165,233,.25)] active:translate-y-[2px]"><Plus size={15} /> Novo lançamento</Link>
-            <Link to="/app/contas" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border bg-gradient-to-b from-white to-slate-100 px-3.5 text-xs font-bold text-text shadow-[inset_0_1px_1px_rgba(255,255,255,.9),0_2px_0_#cbd5e1,0_5px_10px_rgba(15,23,42,.07)] transition hover:-translate-y-0.5 hover:border-sky-300 dark:from-slate-700 dark:to-slate-800 dark:shadow-[inset_0_1px_1px_rgba(255,255,255,.08),0_2px_0_#0b1220,0_5px_10px_rgba(0,0,0,.2)]"><Wallet size={15} /> Contas</Link>
-            <Link to="/app/fornecedores" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border bg-gradient-to-b from-white to-slate-100 px-3.5 text-xs font-bold text-text shadow-[inset_0_1px_1px_rgba(255,255,255,.9),0_2px_0_#cbd5e1,0_5px_10px_rgba(15,23,42,.07)] transition hover:-translate-y-0.5 hover:border-sky-300 dark:from-slate-700 dark:to-slate-800 dark:shadow-[inset_0_1px_1px_rgba(255,255,255,.08),0_2px_0_#0b1220,0_5px_10px_rgba(0,0,0,.2)]"><Tag size={15} /> Fornecedores</Link>
+            <Link to="/app/lancamentos" className="palette-primary inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border px-3.5 text-xs font-bold text-white transition hover:-translate-y-0.5 active:translate-y-[2px]"><Plus size={15} /> Novo lançamento</Link>
+            <Link to="/app/contas" className="palette-outline-hover inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border bg-gradient-to-b from-white to-slate-100 px-3.5 text-xs font-bold text-text shadow-[inset_0_1px_1px_rgba(255,255,255,.9),0_2px_0_#cbd5e1,0_5px_10px_rgba(15,23,42,.07)] transition hover:-translate-y-0.5 dark:from-slate-700 dark:to-slate-800 dark:shadow-[inset_0_1px_1px_rgba(255,255,255,.08),0_2px_0_#0b1220,0_5px_10px_rgba(0,0,0,.2)]"><Wallet size={15} /> Contas</Link>
+            <Link to="/app/fornecedores" className="palette-outline-hover inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border bg-gradient-to-b from-white to-slate-100 px-3.5 text-xs font-bold text-text shadow-[inset_0_1px_1px_rgba(255,255,255,.9),0_2px_0_#cbd5e1,0_5px_10px_rgba(15,23,42,.07)] transition hover:-translate-y-0.5 dark:from-slate-700 dark:to-slate-800 dark:shadow-[inset_0_1px_1px_rgba(255,255,255,.08),0_2px_0_#0b1220,0_5px_10px_rgba(0,0,0,.2)]"><Tag size={15} /> Fornecedores</Link>
           </div>
         </div>
       </Card>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="relative overflow-hidden border-sky-200/60 bg-gradient-to-br from-sky-50 to-white p-5 dark:border-sky-400/15 dark:from-sky-950/30 dark:to-slate-800 sm:p-6">
-          <div className="flex items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[.12em] text-muted">Gasto diário médio</p><p className="tabular mt-2 text-3xl font-extrabold tracking-tight text-text">{formatCurrency(dailyAverage,currency)}</p></div><span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/70 bg-gradient-to-br from-sky-300 to-blue-600 text-white shadow-[inset_0_1px_1px_rgba(255,255,255,.5),0_4px_10px_rgba(14,165,233,.22)]"><TrendingUp size={20} /></span></div>
+        <Card className="hero-panel relative overflow-hidden p-5 sm:p-6">
+          <div className="flex items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[.12em] text-muted">Gasto diário médio</p><p className="tabular mt-2 text-3xl font-extrabold tracking-tight text-text">{formatCurrency(dailyAverage,currency)}</p></div><span className="palette-brand flex h-11 w-11 items-center justify-center rounded-2xl border border-white/70 text-white"><TrendingUp size={20} /></span></div>
           <p className="mt-3 text-xs leading-relaxed text-muted">Média calculada com as despesas registradas neste mês ({elapsedDays} dias).</p>
         </Card>
         <Card className="p-5 lg:col-span-2 sm:p-6">

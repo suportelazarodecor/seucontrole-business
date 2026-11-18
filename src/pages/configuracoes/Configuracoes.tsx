@@ -1,7 +1,8 @@
-import { FormEvent, useState } from 'react'
+import { CSSProperties, FormEvent, useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { useDataStore } from '@/store/dataStore'
 import { useUIStore } from '@/store/uiStore'
+import type { Palette } from '@/store/uiStore'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -13,7 +14,7 @@ import { WhatsAppSection } from './WhatsAppSection'
 
 export default function Configuracoes() {
   const { userId, email, profile, updateProfile, signOut } = useAuthStore()
-  const { theme, setTheme } = useUIStore()
+  const { theme, setTheme, palette, setPalette } = useUIStore()
   const { transactions, accounts, goals, categories } = useDataStore()
 
   const [fullName, setFullName] = useState(profile?.full_name ?? '')
@@ -133,6 +134,32 @@ export default function Configuracoes() {
               <Sun size={13} /> Claro
             </button>
           </div>
+        </div>
+      </Card>
+
+      <Card>
+        <CardHeader title="Paleta de cores" subtitle="Escolha o destaque visual do SEUCONTROLE. A paleta combina com os temas claro e escuro." />
+        <div className="grid gap-3 px-5 pb-5 sm:grid-cols-3">
+          {([
+            { value: 'green', label: 'Verde', number: 'Paleta 01', color: '#16a34a' },
+            { value: 'blue', label: 'Azul', number: 'Paleta 02', color: '#0284c7' },
+            { value: 'red', label: 'Vermelho', number: 'Paleta 03', color: '#dc2626' },
+          ] as const).map(option => {
+            const selected = palette === option.value
+            return <button
+              key={option.value}
+              type="button"
+              aria-pressed={selected}
+              onClick={() => setPalette(option.value as Palette)}
+              className={`rounded-2xl border p-3 text-left transition-all hover:-translate-y-0.5 ${selected ? 'bg-surface-soft shadow-md' : 'bg-surface hover:bg-surface-soft'}`}
+              style={{ borderColor: selected ? option.color : 'var(--color-border)' }}
+            >
+              <span className="palette-swatch mb-3 flex h-12 items-center justify-between rounded-xl px-3 text-white" style={{ '--swatch': option.color } as CSSProperties}>
+                <span className="text-xs font-bold">SEUCONTROLE</span><span className="rounded-lg border border-white/35 bg-white/20 px-2 py-1 text-[10px] font-bold">Ação</span>
+              </span>
+              <span className="flex items-center justify-between gap-2"><span><span className="block text-sm font-bold">{option.label}</span><span className="mt-0.5 block text-[11px] text-muted">{option.number}</span></span>{selected && <span className="rounded-full px-2 py-1 text-[10px] font-bold" style={{ backgroundColor: `${option.color}18`, color: option.color }}>Selecionada</span>}</span>
+            </button>
+          })}
         </div>
       </Card>
 

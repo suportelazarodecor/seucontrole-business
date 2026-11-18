@@ -13,7 +13,7 @@ export default {
         border: 'var(--color-border)',
         text: 'var(--color-text)',
         muted: 'var(--color-muted)',
-        petroleo: '#0EA5E9',
+        petroleo: 'var(--color-accent)',
         esmeralda: '#10B981',
         coral: '#EF4444',
         ambar: '#F59E0B',
