@@ -43,20 +43,20 @@ export function Sidebar() {
         <button aria-label="Fechar menu" className="rounded-xl p-2 text-muted hover:bg-surface-soft md:hidden" onClick={toggleSidebar}><X size={18} /></button>
       </div>
 
-      <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-5">
+      <nav className="flex-1 space-y-3 overflow-y-auto px-3 py-3">
         {groups.map(group => <section key={group.title}>
-          <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[.16em] text-muted/80">{group.title}</p>
-          <div className="space-y-1">{group.items.map(({ to, label, icon: Icon }) => <NavLink
+          <p className="mb-1.5 px-3 text-[9px] font-bold uppercase tracking-[.16em] text-muted/80">{group.title}</p>
+          <div className="space-y-0.5">{group.items.map(({ to, label, icon: Icon }) => <NavLink
             key={to}
             to={to}
             onClick={() => sidebarOpen && toggleSidebar()}
             className={({ isActive }) => clsx(
-              'group flex min-h-11 items-center gap-3 rounded-xl px-2.5 py-2 text-[13px] font-semibold transition-all duration-200',
+              'group flex min-h-10 items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-[12px] font-semibold transition-all duration-200',
               isActive
                 ? 'bg-gradient-to-r from-sky-500 to-cyan-500 text-white shadow-[inset_0_1px_0_rgba(255,255,255,.4),0_3px_0_#0369a1,0_7px_16px_rgba(14,165,233,.20)]'
                 : 'text-muted hover:translate-x-0.5 hover:bg-surface-soft hover:text-text'
             )}
-          >{({ isActive }) => <><span className={clsx('flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] transition-colors', isActive ? 'bg-white/15' : 'bg-surface-soft text-muted group-hover:text-petroleo')}><Icon size={16} /></span><span className="leading-snug">{label}</span>{isActive && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,.9)]" />}</>}</NavLink>)}</div>
+          >{({ isActive }) => <><span className={clsx('flex h-7 w-7 shrink-0 items-center justify-center rounded-[9px] transition-colors', isActive ? 'bg-white/15' : 'bg-surface-soft text-muted group-hover:text-petroleo')}><Icon size={15} /></span><span className="leading-snug">{label}</span>{isActive && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,.9)]" />}</>}</NavLink>)}</div>
         </section>)}
       </nav>
 
