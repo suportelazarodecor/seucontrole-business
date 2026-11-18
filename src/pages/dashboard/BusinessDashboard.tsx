@@ -58,7 +58,8 @@ export default function BusinessDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-bold tracking-tight text-text">Dashboard — Business</h1>
+        <h1 className="text-xl font-bold tracking-tight text-text">Olá, {profile?.full_name?.trim().split(/\s+/)[0] || 'bem-vindo(a)'} 👋</h1>
+        <p className="mt-1 text-sm font-medium text-petroleo">Visão Business · {profile?.company_name || 'Sua empresa'}</p>
         <p className="text-sm text-muted">Visão consolidada do desempenho financeiro da empresa no mês atual.</p>
       </div>
 

@@ -23,6 +23,7 @@ export function Sidebar() {
     { to: '/app/fornecedores', label: 'Fornecedores', icon: Tag },
     { to: '/app/fechamento-fornecedores', label: 'Fechamento fornecedores', icon: TrendingUp },
     { to: '/app/assinaturas', label: 'Assinaturas', icon: Receipt },
+    { to: '/app/folhas-pagamento', label: 'Folhas de pagamento', icon: Wallet },
     { to: '/app/fluxo-caixa', label: 'Fluxo de Caixa', icon: TrendingUp },
     { to: '/app/relatorios', label: 'DRE / Relatórios', icon: FileText },
     { to: '/app/metas', label: 'Metas', icon: Target },

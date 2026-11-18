@@ -19,6 +19,7 @@ import Configuracoes from '@/pages/configuracoes/Configuracoes'
 import Fornecedores from '@/pages/fornecedores/Fornecedores'
 import FechamentoFornecedores from '@/pages/fornecedores/FechamentoFornecedores'
 import Assinaturas from '@/pages/assinaturas/Assinaturas'
+import FolhasPagamento from '@/pages/folhas-pagamento/FolhasPagamento'
 
 export default function App() {
   const { init, loading } = useAuthStore()
@@ -45,6 +46,7 @@ export default function App() {
           <Route path="/app/fornecedores" element={<Fornecedores />} />
           <Route path="/app/fechamento-fornecedores" element={<FechamentoFornecedores />} />
           <Route path="/app/assinaturas" element={<Assinaturas />} />
+          <Route path="/app/folhas-pagamento" element={<FolhasPagamento />} />
           <Route path="/app/fluxo-caixa" element={<FluxoCaixa />} />
           <Route path="/app/relatorios" element={<Relatorios />} />
           <Route path="/app/metas" element={<Metas />} />

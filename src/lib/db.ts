@@ -18,6 +18,7 @@ type Table =
   | 'budgets'
   | 'suppliers'
   | 'subscriptions'
+  | 'payroll_sheets'
 
 function localKey(table: Table, userId: string) {
   return `seucontrole:${userId}:${table}`

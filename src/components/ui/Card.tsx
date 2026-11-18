@@ -4,7 +4,7 @@ import clsx from 'clsx'
 export function Card({ children, className, ...rest }: { children: ReactNode; className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={clsx('rounded-xl border bg-surface shadow-card', className)}
+      className={clsx('rounded-2xl border bg-surface shadow-[0_1px_0_rgba(255,255,255,.75)_inset,0_8px_22px_rgba(15,23,42,.08)] dark:shadow-[0_1px_0_rgba(255,255,255,.06)_inset,0_10px_25px_rgba(0,0,0,.24)]', className)}
       style={{ borderColor: 'var(--color-border)' }}
       {...rest}
     >
