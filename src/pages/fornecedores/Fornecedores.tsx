@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
-import { db } from '@/lib/db'
+import { db, dbErrorMessage } from '@/lib/db'
 import { useDataStore } from '@/store/dataStore'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -10,8 +10,8 @@ import { Plus, Trash } from '@/components/ui/icons'
 type Supplier = { id: string; user_id: string; name: string; contact: string; address: string; supplies: string }
 const databaseHint = 'Confira no Supabase se a migração 002_suppliers_subscriptions.sql foi executada.'
 function errorMessage(error: unknown) {
-  const message = error instanceof Error ? error.message : 'Erro inesperado.'
-  return `${message}${message.includes('does not exist') || message.includes('schema cache') ? ` ${databaseHint}` : ''}`
+  const message = dbErrorMessage(error)
+  return `${message}${message.includes('does not exist') || message.includes('schema cache') || message.includes('PGRST205') || message.includes('42P01') ? ` ${databaseHint}` : ''}`
 }
 
 export default function Fornecedores() {

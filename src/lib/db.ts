@@ -41,6 +41,18 @@ function uuid() {
   return crypto.randomUUID()
 }
 
+export function dbErrorMessage(error: unknown): string {
+  if (error && typeof error === 'object') {
+    const value = error as { message?: unknown; details?: unknown; hint?: unknown; code?: unknown }
+    const message = typeof value.message === 'string' ? value.message : 'Falha de comunicação com o banco.'
+    const code = typeof value.code === 'string' ? ` [${value.code}]` : ''
+    const details = typeof value.details === 'string' && value.details ? ` ${value.details}` : ''
+    const hint = typeof value.hint === 'string' && value.hint ? ` ${value.hint}` : ''
+    return `${message}${code}${details}${hint}`
+  }
+  return error instanceof Error ? error.message : 'Falha inesperada ao acessar o banco.'
+}
+
 export const db = {
   isDemo: !isSupabaseConfigured,
 

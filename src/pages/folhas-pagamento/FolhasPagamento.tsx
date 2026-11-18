@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
-import { db } from '@/lib/db'
+import { db, dbErrorMessage } from '@/lib/db'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { formatCurrency, formatDate } from '@/lib/format'
@@ -25,7 +25,7 @@ export default function FolhasPagamento() {
     if (!userId) return
     db.list<PayrollSheet>('payroll_sheets', userId)
       .then(setRows)
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Não foi possível carregar as folhas.'))
+      .catch((e: unknown) => setError(dbErrorMessage(e)))
       .finally(() => setLoading(false))
   }, [userId])
   const totalPaid = useMemo(() => rows.reduce((sum, row) => sum + Number(row.amount), 0), [rows])
@@ -40,13 +40,13 @@ export default function FolhasPagamento() {
       } as PayrollSheet)
       setRows(current => [row, ...current]); setAmount(''); setNote('')
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Não foi possível salvar. Confira se a migração do Supabase foi aplicada.')
+      setError(`${dbErrorMessage(e)} Confira se a migração 003_payroll_sheets.sql foi executada no Supabase.`)
     } finally { setSaving(false) }
   }
   async function remove(id: string) {
     if (!userId) return
     try { await db.remove('payroll_sheets', userId, id); setRows(current => current.filter(row => row.id !== id)) }
-    catch (e) { setError(e instanceof Error ? e.message : 'Não foi possível excluir a folha.') }
+    catch (e) { setError(dbErrorMessage(e)) }
   }
 
   return <div className="space-y-5">

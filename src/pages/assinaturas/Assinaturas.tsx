@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
-import { db } from '@/lib/db'
+import { db, dbErrorMessage } from '@/lib/db'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { formatCurrency } from '@/lib/format'
@@ -9,8 +9,8 @@ import { Plus, Trash } from '@/components/ui/icons'
 type Subscription = { id: string; user_id: string; name: string; provider: string; amount: number; day: number; active: boolean }
 const migrationHint = 'Confira no Supabase se a migração 002_suppliers_subscriptions.sql foi executada.'
 function errorMessage(error: unknown) {
-  const message = error instanceof Error ? error.message : 'Erro inesperado.'
-  return `${message}${message.includes('does not exist') || message.includes('schema cache') ? ` ${migrationHint}` : ''}`
+  const message = dbErrorMessage(error)
+  return `${message}${message.includes('does not exist') || message.includes('schema cache') || message.includes('PGRST205') || message.includes('42P01') ? ` ${migrationHint}` : ''}`
 }
 
 export default function Assinaturas() {
